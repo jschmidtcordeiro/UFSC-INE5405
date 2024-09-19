@@ -1,0 +1,8 @@
+# Ignore everything inside the tmp folder
+tmp/
+
+# Ignore original database files, because they are too big
+202405_Servidores_SIAPE/
+
+# Ignore .DS_Store files
+.DS_Store
