@@ -18,7 +18,7 @@ if 'name' in df.columns:
 for column in df.columns:
     frequency_table = df[column].value_counts().reset_index()  # Convert Series to DataFrame
     frequency_table.columns = [column, 'count']  # Rename columns
-    output_path = f'/home/lucas/UFSC-INE5405/output/frequency_{column}.csv'
+    output_path = f'output/frequency_{column}.csv'
     
     # Save the frequency table to CSV
     frequency_table.to_csv(output_path, index=False)
