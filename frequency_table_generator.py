@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the CSV file with encoding handling
-file_path = '/home/lucas/UFSC-INE5405/output/filtered_ufsc.csv'
+file_path = 'output/filtered_ufsc.csv'
 
 try:
     # Try loading the file with the correct encoding
