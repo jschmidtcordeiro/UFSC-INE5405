@@ -13,8 +13,8 @@ output_file_path <- "output/combined_result.csv"
 
 # List of headers to select (adjust this list as needed)
 headers_to_select <- c(
-  "NOME",
-  "Id_SERVIDOR_PORTAL.x",
+  "Id_SERVIDOR_PORTAL",
+  "NOME.x",
   "TIPO_VINCULO",
   "DESCRICAO_CARGO",
   # "UORG_LOTACAO",
@@ -48,7 +48,7 @@ print("Filtered CSV created: filtered_result.csv")
 
 # Update the headers in the filtered CSV
 header_updates <- c(
-  "Id_SERVIDOR_PORTAL.x" = "ID_SERVIDOR_PORTAL", 
+  "NOME.x" = "NOME", 
   "REMUNERAÃ.Ã.O.BÃ.SICA.BRUTA..R.." = "REMUNERACAO_BASICA_BRUTA",
   "REMUNERAÃ.Ã.O.APÃ.S.DEDUÃ.Ã.ES.OBRIGATÃ.RIAS..R.." = "REMUNERACAO_APOS_DEDUCOES",
   "TOTAL.DE.VERBAS.INDENIZATÃ.RIAS..R....." = "TOTAL_DE_VERBAS_INDENIZATORIAS"
