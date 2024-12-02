@@ -2,60 +2,167 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
-def load_data(file_path):
+def carregar_dados(caminho_arquivo):
     try:
-        return pd.read_csv(file_path, encoding='utf-8')
+        return pd.read_csv(caminho_arquivo, encoding='utf-8')
     except UnicodeDecodeError:
-        return pd.read_csv(file_path, encoding='ISO-8859-1')
+        return pd.read_csv(caminho_arquivo, encoding='ISO-8859-1')
 
-def calculate_statistics(series):
-    """Calculate basic statistical measures for a numeric series"""
-    stats_dict = {
-        'Mean': np.mean(series),
-        'Median': np.median(series),
-        'Mode': stats.mode(series)[0],
-        'Variance': np.var(series),
-        'Standard Deviation': np.std(series),
-        'Range': series.max() - series.min(),
-        'Coefficient of Variation': (np.std(series) / np.mean(series)) * 100,
-        'Minimum': series.min(),
-        'Maximum': series.max(),
-        'Q1': np.percentile(series, 25),
-        'Q3': np.percentile(series, 75),
-        'IQR': np.percentile(series, 75) - np.percentile(series, 25)
+def calcular_estatisticas(serie):
+    """Calcular medidas estatísticas básicas para uma série numérica"""
+    estatisticas_dict = {
+        'Média': np.mean(serie),
+        'Mediana': np.median(serie),
+        'Moda': stats.mode(serie)[0],
+        'Variância': np.var(serie),
+        'Desvio Padrão': np.std(serie),
+        'Amplitude': serie.max() - serie.min(),
+        'Coeficiente de Variação': (np.std(serie) / np.mean(serie)) * 100,
+        'Mínimo': serie.min(),
+        'Máximo': serie.max(),
+        'Q1': np.percentile(serie, 25),
+        'Q3': np.percentile(serie, 75),
+        'IQR': np.percentile(serie, 75) - np.percentile(serie, 25)
     }
-    return stats_dict
+    return estatisticas_dict
+
+def print_estatisticas(estatisticas):
+    # Imprimir resultados
+    print("\n=== Análise Estatística da Remuneração Apos Deduções ===")
+    print("\nMedidas de Tendência Central:")
+    print(f"Média: R$ {estatisticas['Média']:.2f}")
+    print(f"Mediana: R$ {estatisticas['Mediana']:.2f}")
+    print(f"Moda: R$ {estatisticas['Moda']:.2f}")
+    
+    print("\nMedidas de Dispersão:")
+    print(f"Variância: {estatisticas['Variância']:.2f}")
+    print(f"Desvio Padrão: R$ {estatisticas['Desvio Padrão']:.2f}")
+    print(f"Amplitude: R$ {estatisticas['Amplitude']:.2f}")
+    print(f"Coeficiente de Variação: {estatisticas['Coeficiente de Variação']:.2f}%")
+    
+    print("\nMedidas de Posição:")
+    print(f"Mínimo: R$ {estatisticas['Mínimo']:.2f}")
+    print(f"Máximo: R$ {estatisticas['Máximo']:.2f}")
+    print(f"Primeiro Quartil (Q1): R$ {estatisticas['Q1']:.2f}")
+    print(f"Terceiro Quartil (Q3): R$ {estatisticas['Q3']:.2f}")
+    print(f"Intervalo Interquartil (IQR): R$ {estatisticas['IQR']:.2f}")
+
+def calcular_estatisticas_datas(serie):
+    """Calcular medidas estatísticas básicas para uma série de datas"""
+    # Converter strings de data para datetime
+    datas = pd.to_datetime(serie, format='%d/%m/%Y')
+    
+    # Calcular a data mais recente e mais antiga
+    data_min = datas.min()
+    data_max = datas.max()
+    
+    # Calcular a amplitude em dias
+    amplitude_dias = (data_max - data_min).days
+    
+    # Calcular quartis
+    q1 = datas.quantile(0.25)
+    mediana = datas.quantile(0.50)
+    q3 = datas.quantile(0.75)
+    iqr = (q3 - q1).days
+    
+    # Calcular média
+    media = datas.mean()
+    
+    # Calcular moda
+    moda = datas.mode()[0]
+    
+    estatisticas_dict = {
+        'Data mais antiga': data_min,
+        'Data mais recente': data_max,
+        'Amplitude (dias)': amplitude_dias,
+        'Média': media,
+        'Mediana': mediana,
+        'Moda': moda,
+        'Q1': q1,
+        'Q3': q3,
+        'IQR (dias)': iqr
+    }
+    return estatisticas_dict
+
+def print_estatisticas_datas(estatisticas):
+    print("\n=== Análise Estatística das Datas de Ingresso ===")
+    print(f"\nData mais antiga: {estatisticas['Data mais antiga'].strftime('%d/%m/%Y')}")
+    print(f"Data mais recente: {estatisticas['Data mais recente'].strftime('%d/%m/%Y')}")
+    print(f"Amplitude: {estatisticas['Amplitude (dias)']} dias")
+    print(f"\nMédia: {estatisticas['Média'].strftime('%d/%m/%Y')}")
+    print(f"Mediana: {estatisticas['Mediana'].strftime('%d/%m/%Y')}")
+    print(f"Moda: {estatisticas['Moda'].strftime('%d/%m/%Y')}")
+    print(f"\nPrimeiro Quartil (Q1): {estatisticas['Q1'].strftime('%d/%m/%Y')}")
+    print(f"Terceiro Quartil (Q3): {estatisticas['Q3'].strftime('%d/%m/%Y')}")
+    print(f"Intervalo Interquartil (IQR): {estatisticas['IQR (dias)']} dias")
+
+def calcular_estatisticas_qualitativas(serie):
+    """Calcular medidas estatísticas para uma série qualitativa"""
+    # Calcular frequências absolutas
+    freq_absoluta = serie.value_counts()
+    
+    # Calcular frequências relativas (percentuais)
+    freq_relativa = serie.value_counts(normalize=True) * 100
+    
+    # Calcular a moda
+    moda = serie.mode()[0]
+    
+    # Número total de categorias
+    num_categorias = len(freq_absoluta)
+    
+    # Criar dicionário com as estatísticas
+    estatisticas_dict = {
+        'Frequência Absoluta': freq_absoluta,
+        'Frequência Relativa': freq_relativa,
+        'Moda': moda,
+        'Número de Categorias': num_categorias,
+        'Total de Observações': len(serie)
+    }
+    return estatisticas_dict
+
+def print_estatisticas_qualitativas(estatisticas, nome_variavel):
+    print(f"\n=== Análise Estatística de {nome_variavel} ===")
+    print(f"\nNúmero total de observações: {estatisticas['Total de Observações']}")
+    print(f"Número de categorias diferentes: {estatisticas['Número de Categorias']}")
+    print(f"Categoria mais frequente (Moda): {estatisticas['Moda']}")
+    
+    print("\nDistribuição de Frequências:")
+    print("\nCategoria | Frequência Absoluta | Frequência Relativa (%)")
+    print("-" * 60)
+    
+    # Combinar frequências absolutas e relativas para impressão
+    freq_abs = estatisticas['Frequência Absoluta']
+    freq_rel = estatisticas['Frequência Relativa']
+    
+    for categoria in freq_abs.index:
+        print(f"{categoria[:30]:<30} | {freq_abs[categoria]:^18} | {freq_rel[categoria]:>18.2f}")
 
 def main():
-    # Load the data
-    file_path = 'output/filtered_ufsc.csv'
-    df = load_data(file_path)
+    # Carregar os dados
+    caminho_arquivo = 'output/filtered_ufsc.csv'
+    df = carregar_dados(caminho_arquivo)
+
+    # # Análise dos salários bruto
+    # coluna_salario = 'REMUNERACAO_BRUTA'
+    # df[coluna_salario] = df[coluna_salario].str.replace(',', '.').astype(float)
+    # estatisticas = calcular_estatisticas(df[coluna_salario])
+    # print_estatisticas(estatisticas)
+
+    # # Análise dos salários
+    # coluna_salario = 'REMUNERACAO_APOS_DEDUCOES'
+    # df[coluna_salario] = df[coluna_salario].str.replace(',', '.').astype(float)
+    # estatisticas = calcular_estatisticas(df[coluna_salario])
+    # print_estatisticas(estatisticas)
     
-    # Convert salary column to numeric, replacing comma with dot
-    df['REMUNERACAO_BASICA_BRUTA'] = df['REMUNERACAO_BASICA_BRUTA'].str.replace(',', '.').astype(float)
-    
-    # Calculate statistics for salary
-    salary_stats = calculate_statistics(df['REMUNERACAO_BASICA_BRUTA'])
-    
-    # Print results
-    print("\n=== Statistical Analysis of Basic Gross Remuneration ===")
-    print("\nCentral Tendency Measures:")
-    print(f"Mean: R$ {salary_stats['Mean']:.2f}")
-    print(f"Median: R$ {salary_stats['Median']:.2f}")
-    print(f"Mode: R$ {salary_stats['Mode']:.2f}")
-    
-    print("\nDispersion Measures:")
-    print(f"Variance: {salary_stats['Variance']:.2f}")
-    print(f"Standard Deviation: R$ {salary_stats['Standard Deviation']:.2f}")
-    print(f"Range: R$ {salary_stats['Range']:.2f}")
-    print(f"Coefficient of Variation: {salary_stats['Coefficient of Variation']:.2f}%")
-    
-    print("\nPosition Measures:")
-    print(f"Minimum: R$ {salary_stats['Minimum']:.2f}")
-    print(f"Maximum: R$ {salary_stats['Maximum']:.2f}")
-    print(f"First Quartile (Q1): R$ {salary_stats['Q1']:.2f}")
-    print(f"Third Quartile (Q3): R$ {salary_stats['Q3']:.2f}")
-    print(f"Interquartile Range (IQR): R$ {salary_stats['IQR']:.2f}")
+    # # Análise das datas de ingresso
+    # coluna_data = 'DATA_INGRESSO_ORGAO'
+    # estatisticas_datas = calcular_estatisticas_datas(df[coluna_data])
+    # print_estatisticas_datas(estatisticas_datas)
+
+    # Análise dos cargos
+    coluna_cargo = 'DESCRICAO_CARGO'
+    estatisticas_cargos = calcular_estatisticas_qualitativas(df[coluna_cargo])
+    print_estatisticas_qualitativas(estatisticas_cargos, "Descrição dos Cargos")
 
 if __name__ == "__main__":
     main()
