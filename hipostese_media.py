@@ -1,5 +1,5 @@
 import pandas as pd
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, mannwhitneyu
 
 # 1. Ler o arquivo CSV
 file_path = "output/filtered_ufsc.csv"
@@ -11,35 +11,25 @@ data['REMUNERACAO_BASICA_BRUTA'] = data['REMUNERACAO_BASICA_BRUTA'].str.replace(
 data['REMUNERACAO_APOS_DEDUCOES'] = data['REMUNERACAO_APOS_DEDUCOES'].str.replace(
     ',', '.').astype(float)
 
-# Verificar se há valores inválidos, como zero, e tratar os casos
-print("\nVerificando valores inválidos (zero ou NaN):")
-# Remuneração bruta igual a zero
-print(data[data['REMUNERACAO_BASICA_BRUTA'] == 0])
-# Remuneração após deduções igual a zero
-print(data[data['REMUNERACAO_APOS_DEDUCOES'] == 0])
-
-# Remover linhas onde a remuneração básica ou a remuneração após deduções é zero
-data = data[(data['REMUNERACAO_BASICA_BRUTA'] > 0) &
-            (data['REMUNERACAO_APOS_DEDUCOES'] > 0)]
-
-# Calcular o percentual de deduções
 data['PERCENTUAL_DE_DUCOES'] = ((data['REMUNERACAO_BASICA_BRUTA'] - data['REMUNERACAO_APOS_DEDUCOES']) /
                                 data['REMUNERACAO_BASICA_BRUTA']) * 100
 
-# 3. Determinar o percentil 75 da remuneração básica bruta
+# Remover dados cujo percentual de dedução é negativo (advindas de reembolsos)
+data = data[(data['PERCENTUAL_DE_DUCOES'] >= 0)]
+
 percentile_75 = data['REMUNERACAO_BASICA_BRUTA'].quantile(0.75)
 
-# Separar os grupos
 grupo_acima = data[data['REMUNERACAO_BASICA_BRUTA']
                    > percentile_75]['PERCENTUAL_DE_DUCOES']
 grupo_abaixo = data[data['REMUNERACAO_BASICA_BRUTA']
                     <= percentile_75]['PERCENTUAL_DE_DUCOES']
 
+print(percentile_75)
+
 # 4. Tratar valores NaN ou inválidos
 grupo_acima = grupo_acima.dropna()
 grupo_abaixo = grupo_abaixo.dropna()
 
-# Verificar se os grupos têm valores suficientes para o teste
 print("\nGrupo acima do percentil 75:")
 print(grupo_acima.describe())
 
